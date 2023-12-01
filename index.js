@@ -68,6 +68,57 @@ app.get('/appliedJobs', async (req, res) => {
   res.send(result);
 })
 
+  app.get("/jobs/:id", async (req, res) => {
+            const id = req.params.id
+            
+            const query = {
+                _id : new ObjectId(id)
+            }
+            const result = await jobsCollection.findOne(query)
+            console.log(result);
+            res.send(result)
+            
+        })
+        
+        
+        /* delete a single job  */
+        app.delete('/jobs/:id', async (req, res) => {
+          const id = req.params.id
+          console.log(id);
+          const query = { _id:new ObjectId(id) }
+          const result = await jobsCollection.deleteOne(query)
+          console.log(result);
+          res.send(result);
+      }
+      )
+
+           app.put('/jobs/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = {
+                _id: new ObjectId(id)
+            }
+            const newjobs = req.body
+            const options = {
+                upsert: true,
+            }
+            const updatedJob = {
+                $set: {
+                    jobBanner: newjobs.jobBanner,
+                    jobTitle: newjobs.jobTitle,
+                    category: newjobs.category,
+                    salaryRange: newjobs.salaryRange,
+                    short_description: newjobs.short_description,
+                    postingDate: newjobs.postingDate,
+                    applicationDeadline: newjobs.applicationDeadline,
+                    postedBy: newjobs.postedBy
+
+                }
+            }
+            const result = await jobsCollection.updateOne(filter, updatedJob, options)
+            console.log(result);
+            res.send(result);
+        })
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
